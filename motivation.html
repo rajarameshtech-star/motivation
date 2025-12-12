@@ -7,18 +7,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            background-color: #0c001a; /* Dark blue/purple background */
-            color: #fff;
-            font-family: 'Lato', sans-serif;
-            font-weight: 700;
-            overflow-x: hidden;
-        }
+            p {
+        font-size: 5em;
+        text-align: center;
+        margin: 0.5em 0;
+        position: relative;
+        z-index: 1;
+
+        /* Glassy effect */
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+        /* Add a shiny highlight */
+        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2), 
+                     0px 2px 4px rgba(0, 0, 0, 0.2), 
+                     0px 4px 8px rgba(0, 0, 0, 0.1);
+
+        /* Subtle blur for a frosted look */
+        filter: blur(0.2px);
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        background-color: #0c001a; /* Dark blue/purple background */
+        color: #fff;
+        font-family: 'Lato', sans-serif;
+        font-weight: 700;
+        overflow-x: hidden;
+    }
 
         .new-background {
             position: fixed;
@@ -58,15 +79,15 @@
             }
         }
         
-        p {
+        /* p {
             font-size: 5em;
             text-align: center;
             text-shadow: 0 0 5px rgba(0,0,0,0.5), 0 0 10px rgba(0,0,0,0.5);
             margin: 0.5em 0;
             transition: opacity 0.4s ease-out;
-            position: relative; /* Ensure text is above background */
-            z-index: 1;
-        }
+            position: relative; Ensure text is above background */
+            /* z-index: 1;
+        } */
 
         .special-animation::after {
             content: '|';
@@ -75,6 +96,27 @@
 
         @keyframes blink {
             50% {
+                opacity: 0;
+            }
+        }
+
+        .shooting-star {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #fff, rgba(255, 255, 255, 0));
+            border-radius: 50%;
+            animation: shooting 1s ease-out forwards;
+            z-index: 2;
+        }
+
+        @keyframes shooting {
+            from {
+                transform: translate(-50px, -50px) scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: translate(300px, 300px) scale(0.5);
                 opacity: 0;
             }
         }
@@ -101,7 +143,8 @@
     <p>I am Winning</p>
     <p>I am Winning</p>
     <p class="special-animation" data-text="I am Winning">I am Winning</p>
-
+    <p>I am Winning</p>
+    <p>I am Winning</p>
     <script>
         const allParagraphs = document.querySelectorAll('p');
         const specialParagraphs = document.querySelectorAll('.special-animation');
@@ -109,35 +152,31 @@
         const windowHeight = window.innerHeight;
         let confettiFired = false;
 
+        function createShootingStar() {
+            const star = document.createElement('div');
+            star.className = 'shooting-star';
+            star.style.top = `${Math.random() * window.innerHeight}px`;
+            star.style.left = `${Math.random() * window.innerWidth}px`;
+            document.body.appendChild(star);
+
+            // Remove the star after the animation ends
+            setTimeout(() => {
+                star.remove();
+            }, 1000);
+        }
+
         function fireConfetti() {
             const defaults = {
-                spread: 360, // Full spread
+                spread: 360,
                 ticks: 50,
                 gravity: 0.5,
                 decay: 0.94,
                 startVelocity: 30,
-                colors: ['#ffc0cb', '#ff69b4', '#ff1493', '#da70d6', '#e6e6fa'] // Fun, vibrant colors
+                colors: ['#ffc0cb', '#ff69b4', '#ff1493', '#da70d6', '#e6e6fa']
             };
 
             function randomInRange(min, max) {
                 return Math.random() * (max - min) + min;
-            }
-
-            function fireShootingStar() {
-                confetti({
-                    particleCount: 2,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 0, y: 0 },
-                    colors: ['#ffffff', '#ffeb3b']
-                });
-                confetti({
-                    particleCount: 2,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 1, y: 0 },
-                    colors: ['#ffffff', '#ffeb3b']
-                });
             }
 
             // Launch regular confetti
@@ -160,9 +199,10 @@
                 origin: { x: 0.5, y: 0.3 }
             }));
 
-            // Launch shooting stars after a short delay
-            setTimeout(fireShootingStar, 200);
-            setTimeout(fireShootingStar, 400);
+            // Launch shooting stars
+            for (let i = 0; i < 5; i++) {
+                setTimeout(createShootingStar, i * 200);
+            }
         }
 
         function handleScroll() {
